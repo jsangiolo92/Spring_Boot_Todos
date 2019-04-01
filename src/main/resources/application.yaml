@@ -1,1 +1,14 @@
+server:
+  port: 3050
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/todos
+    username: demo
+    password: postgres
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
