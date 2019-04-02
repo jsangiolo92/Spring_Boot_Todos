@@ -1,5 +1,6 @@
 package com.cedrus.practice.todo.Spring_Boot_Todos.model;
 
+import com.cedrus.practice.todo.Spring_Boot_Todos.exception.BlankToDoException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,5 +29,10 @@ public class ToDoItem {
     public ToDoItem(int id, String item, boolean important) {
         this(id, item);
         this.important = important;
+    }
+
+    public void validateItem() throws BlankToDoException {
+        if (getItem().length() < 1)
+            throw new BlankToDoException("Empty item field entered");
     }
 }

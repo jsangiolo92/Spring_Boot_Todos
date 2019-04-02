@@ -15,37 +15,60 @@ public class ToDoService {
     @Autowired
     ToDoRepo toDoRepo;
 
+    public ToDoItem getOneToDo(int id) throws ToDoNotFoundException {
+        try {
+            return validateToDo(id);
+        }
+        catch (ToDoNotFoundException notFound) {
+            throw notFound;
+        }
+    }
+
     public List<ToDoItem> getAllToDos() {
         return toDoRepo.findAll();
     }
 
     public void addToDo(ToDoItem toDoItem) throws BlankToDoException {
-        if (toDoItem.getItem().length() < 1)
-            throw new BlankToDoException("No text entered for to do!");
-
-        toDoRepo.save(toDoItem);
-        System.out.println("ToDo item added to DB");
+        try {
+            toDoItem.validateItem();
+            toDoRepo.save(toDoItem);
+        }
+        catch (BlankToDoException blankToDo) {
+            throw blankToDo;
+        }
     }
 
     public void updateToDo(int id, ToDoItem newToDo) throws ToDoNotFoundException, BlankToDoException {
-        ToDoItem toBeUpdated = toDoRepo.findById(id);
-
-        if (toBeUpdated == null)
-            throw new ToDoNotFoundException(String.format("ToDo not found for id: " + id));
-
-        if (newToDo.getItem().length() < 1)
-            throw new BlankToDoException("No text entered for to do");
-
-        toBeUpdated.setItem(newToDo.getItem());
-        toDoRepo.save(toBeUpdated);
+        try {
+            ToDoItem toBeUpdated = validateToDo(id);
+            try {
+                newToDo.validateItem();
+                toBeUpdated.setItem(newToDo.getItem());
+                toDoRepo.save(toBeUpdated);
+            }
+            catch (BlankToDoException blankToDo) {
+                throw blankToDo;
+            }
+        }
+        catch (ToDoNotFoundException notFound) {
+            throw notFound;
+        }
     }
 
     public void removeToDo(int id) throws ToDoNotFoundException {
-        ToDoItem toBeDeleted = toDoRepo.findById(id);
+        try {
+            ToDoItem toBeDeleted = validateToDo(id);
+            toDoRepo.deleteById(id);
+        }
+        catch (ToDoNotFoundException notFound) {
+            throw notFound;
+        }
+    }
 
-        if (toBeDeleted == null)
-            throw new ToDoNotFoundException(String.format("Todo not found for id: " + id));
-
-        toDoRepo.deleteById(id);
+    private ToDoItem validateToDo(int id) throws ToDoNotFoundException{
+        ToDoItem toDoItem = toDoRepo.findById(id);
+        if (toDoItem == null)
+            throw new ToDoNotFoundException(String.format("ToDo not found for id: " + id));
+        return toDoItem;
     }
 }

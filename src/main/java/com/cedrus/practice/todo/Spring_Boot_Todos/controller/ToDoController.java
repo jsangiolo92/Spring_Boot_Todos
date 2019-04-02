@@ -20,6 +20,17 @@ public class ToDoController {
     @Autowired
     ToDoService toDoService;
 
+    @RequestMapping(value = "todos/{id}", method = RequestMethod.GET)
+    public ToDoItem getToDo(@PathVariable int id) {
+        try {
+            return toDoService.getOneToDo(id);
+        }
+        catch (ToDoNotFoundException notFound) {
+            System.out.println(notFound);
+            return new ToDoItem();
+        }
+    }
+
     @RequestMapping(value = "todos", method = RequestMethod.GET)
     public List<ToDoItem> getAll() {
         return toDoService.getAllToDos();
