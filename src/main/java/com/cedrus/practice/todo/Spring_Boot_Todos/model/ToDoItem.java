@@ -1,11 +1,15 @@
 package com.cedrus.practice.todo.Spring_Boot_Todos.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
+@Getter @Setter
 public class ToDoItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,14 +29,4 @@ public class ToDoItem {
         this(id, item);
         this.important = important;
     }
-
-    public int getId() { return this.id; }
-    public void setId(int id) { this.id = id;}
-
-    public String getItem() { return this.item; }
-    public void setItem(String item) { this.item = item; }
-
-    public boolean getImportant() { return this.important; }
-    public void setImportant(boolean important) { this.important = important; }
-
 }
