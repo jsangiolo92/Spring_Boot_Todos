@@ -3,8 +3,11 @@ package com.cedrus.practice.todo.Spring_Boot_Todos.controller;
 import com.cedrus.practice.todo.Spring_Boot_Todos.exception.BlankToDoException;
 import com.cedrus.practice.todo.Spring_Boot_Todos.exception.ToDoNotFoundException;
 import com.cedrus.practice.todo.Spring_Boot_Todos.model.ToDoItem;
+import com.cedrus.practice.todo.Spring_Boot_Todos.model.ToDoResponse;
 import com.cedrus.practice.todo.Spring_Boot_Todos.service.ToDoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,49 +24,71 @@ public class ToDoController {
     ToDoService toDoService;
 
     @RequestMapping(value = "todos/{id}", method = RequestMethod.GET)
-    public ToDoItem getToDo(@PathVariable int id) {
+    public ResponseEntity<ToDoResponse> getToDo(@PathVariable int id) {
         try {
-            return toDoService.getOneToDo(id);
+            ToDoItem toDoItem = toDoService.getOneToDo(id);
+            return marshallResponse(toDoItem, 200, HttpStatus.OK);
         }
         catch (ToDoNotFoundException notFound) {
-            System.out.println(notFound);
-            return new ToDoItem();
+            return marshallResponse(false, 404, notFound.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @RequestMapping(value = "todos", method = RequestMethod.GET)
-    public List<ToDoItem> getAll() {
-        return toDoService.getAllToDos();
+    public ResponseEntity<ToDoResponse> getAll() {
+        List<ToDoItem> toDoList = toDoService.getAllToDos();
+        return marshallResponse(toDoList, 200, HttpStatus.OK);
     }
 
     @RequestMapping(value = "todos", method = RequestMethod.POST)
-    public void create(@RequestBody ToDoItem toDo) {
+    public ResponseEntity<ToDoResponse> create(@RequestBody ToDoItem toDo) {
         try {
             toDoService.addToDo(toDo);
+            return marshallResponse(true, 201, "Success", HttpStatus.CREATED);
         }
         catch (BlankToDoException blankToDo) {
-            System.out.println(blankToDo);
+            return marshallResponse(false, 400, blankToDo.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @RequestMapping(value = "todos/{id}", method = RequestMethod.PUT)
-    public void update(@PathVariable int id, @RequestBody ToDoItem toDo) {
+    public ResponseEntity<ToDoResponse> update(@PathVariable int id, @RequestBody ToDoItem toDo) {
         try {
             toDoService.updateToDo(id, toDo);
+            return marshallResponse(true, 202, "Success", HttpStatus.ACCEPTED);
         }
-        catch (ToDoNotFoundException| BlankToDoException exception) {
-            System.out.println(exception);
+        catch (ToDoNotFoundException notFound) {
+            return marshallResponse(false, 404, notFound.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (BlankToDoException blankToDo) {
+            return marshallResponse(false, 400, blankToDo.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @RequestMapping(value = "todos/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable int id) {
+    public ResponseEntity<ToDoResponse> delete(@PathVariable int id) {
         try {
             toDoService.removeToDo(id);
+            return marshallResponse(true, 202, "Success", HttpStatus.ACCEPTED);
         }
-        catch (ToDoNotFoundException idNotFound) {
-            System.out.println(idNotFound);
+        catch (ToDoNotFoundException notFound) {
+            return marshallResponse(false, 404, notFound.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<ToDoResponse> marshallResponse(ToDoItem toDoItem, int statusCode, HttpStatus httpStatus) {
+        ToDoResponse response = new ToDoResponse(toDoItem, statusCode);
+        return new ResponseEntity<>(response, httpStatus);
+    }
+
+    public ResponseEntity<ToDoResponse> marshallResponse(List<ToDoItem> toDoItemList, int statusCode, HttpStatus httpStatus) {
+        ToDoResponse response = new ToDoResponse(toDoItemList, statusCode);
+        return new ResponseEntity<>(response, httpStatus);
+    }
+
+    public ResponseEntity<ToDoResponse> marshallResponse(boolean isSuccessful, int statusCode, String statusMessage, HttpStatus httpStatus) {
+        ToDoResponse response = new ToDoResponse(isSuccessful, statusCode, statusMessage);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
 }
