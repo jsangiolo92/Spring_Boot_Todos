@@ -16,6 +16,7 @@ public class ToDoItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String item;
+    private String detail;
     private  boolean important;
 
     public ToDoItem() {}
