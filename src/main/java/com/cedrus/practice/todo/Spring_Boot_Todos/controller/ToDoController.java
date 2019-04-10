@@ -8,11 +8,7 @@ import com.cedrus.practice.todo.Spring_Boot_Todos.service.ToDoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +19,7 @@ public class ToDoController {
     @Autowired
     ToDoService toDoService;
 
+    @CrossOrigin
     @RequestMapping(value = "todos/{id}", method = RequestMethod.GET)
     public ResponseEntity<ToDoResponse> getToDo(@PathVariable int id) {
         try {
@@ -34,12 +31,14 @@ public class ToDoController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "todos", method = RequestMethod.GET)
     public ResponseEntity<ToDoResponse> getAll() {
         List<ToDoItem> toDoList = toDoService.getAllToDos();
         return marshallResponse(toDoList, 200, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @RequestMapping(value = "todos", method = RequestMethod.POST)
     public ResponseEntity<ToDoResponse> create(@RequestBody ToDoItem toDo) {
         try {
@@ -51,6 +50,7 @@ public class ToDoController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "todos/{id}", method = RequestMethod.PUT)
     public ResponseEntity<ToDoResponse> update(@PathVariable int id, @RequestBody ToDoItem toDo) {
         try {
@@ -65,6 +65,7 @@ public class ToDoController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "todos/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<ToDoResponse> delete(@PathVariable int id) {
         try {
