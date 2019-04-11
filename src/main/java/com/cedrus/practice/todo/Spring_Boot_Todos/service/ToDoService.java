@@ -44,6 +44,8 @@ public class ToDoService {
             try {
                 newToDo.validateItem();
                 toBeUpdated.setItem(newToDo.getItem());
+                toBeUpdated.setDetail(newToDo.getDetail());
+                toBeUpdated.setImportant(newToDo.getImportant());
                 toDoRepo.save(toBeUpdated);
             }
             catch (BlankToDoException blankToDo) {
