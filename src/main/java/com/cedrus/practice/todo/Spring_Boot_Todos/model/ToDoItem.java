@@ -36,4 +36,8 @@ public class ToDoItem {
         if (getItem().length() < 1)
             throw new BlankToDoException("Empty item field entered");
     }
+
+    public boolean getImportant() {
+        return this.important;
+    }
 }
